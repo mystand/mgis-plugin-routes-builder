@@ -58,12 +58,13 @@ BuildRouteButton.propTypes = {
 }
 
 export default connect(
+  // todo rewrite to selectors
   (state, props) => {
-    const { layer } = props
+    const { layer, cardMode } = props
     const config = state.pluginConfigs[manifest.key]
     const layerConfig = R.find(x => x.layerKey === layer.key, config.layers || [])
     return {
-      skip: layerConfig === undefined,
+      skip: layerConfig === undefined || cardMode !== 'EDIT',
       routePropertyKeys: layerConfig && layerConfig.properties.map(x => x.property)
     }
   },

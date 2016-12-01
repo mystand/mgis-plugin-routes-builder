@@ -31,7 +31,12 @@ export default {
               input: 'array',
               item: {
                 fields: [
-                  { key: 'property', label: 'Поле', input: 'select', inputOptions: { options: buildFieldsOptions } }
+                  {
+                    key: 'property',
+                    label: 'Поле (только тип Relation)',
+                    input: 'select',
+                    inputOptions: { options: buildFieldsOptions }
+                  }
                 ]
               }
             }
