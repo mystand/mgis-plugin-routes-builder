@@ -52,7 +52,7 @@ class BuildRouteButton extends React.Component {
 
 BuildRouteButton.propTypes = {
   skip: PropTypes.bool.isRequired,
-  routePropertyKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
+  routePropertyKeys: PropTypes.arrayOf(PropTypes.string),
   buildRoute: PropTypes.func.isRequired,
   feature: PropTypes.object
 }
@@ -64,7 +64,7 @@ export default connect(
     const layerConfig = R.find(x => x.layerKey === layer.key, config.layers || [])
     return {
       skip: layerConfig === undefined,
-      routePropertyKeys: layerConfig.properties.map(x => x.property)
+      routePropertyKeys: layerConfig && layerConfig.properties.map(x => x.property)
     }
   },
   dispatch => ({
