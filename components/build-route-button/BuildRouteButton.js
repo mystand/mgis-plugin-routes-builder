@@ -21,8 +21,8 @@ class BuildRouteButton extends React.Component {
   @autobind
   onClick() {
     const { buildRoute, routePropertyKeys, feature } = this.props
-    buildRoute(feature, routePropertyKeys, this.buildSuccess, this.buildFailure)
     this.setState({ loading: true })
+    buildRoute(feature, routePropertyKeys, this.buildSuccess, this.buildFailure)
   }
 
   @autobind

@@ -22,15 +22,35 @@ function* buildRoute(action) {
   const routeFeatureIds = yield select(state =>
     propertyKeys.map(propertyKey => state.form[FEATURE_FORM_KEY].properties[propertyKey].value)
   )
-  const featureGeometries = yield select(state => routeFeatureIds.map(id => state.features[id].geometry))
+  const featureGeometries = yield select(state =>
+    routeFeatureIds
+      .map(id => state.features[id])
+      .filter(f => f != null)
+      .map(f => f.geometry)
+  )
+
+  if (featureGeometries.length < 2) {
+    console.warn(`Route of "${feature.properties.name} (${feature.id}) should have at least 2 checkpoints"`)
+    yield put(actions.buildRouteFailure(feature, BUILD_ROUTE_ERROR, failure))
+    return
+  }
 
   const coords = featureGeometries.map(convertGeometryToRoutePoint)
   if (coords.includes(null)) {
     console.warn(`Route for feature "${feature.properties.name} (${feature.id}) wasn't built"`)
+    yield put(actions.buildRouteFailure(feature, BUILD_ROUTE_ERROR, failure))
     return
   }
 
-  const route = yield call(BuildRouteApi.buildRoute, coords)
+  let route = null
+  try {
+    route = yield call(BuildRouteApi.buildRoute, coords)
+  } catch (e) {
+    console.error(`Route for feature "${feature.properties.name} (${feature.id}) wasn't built. Request error: ${e}"`)
+    yield put(actions.buildRouteFailure(feature, BUILD_ROUTE_ERROR, failure))
+    return
+  }
+
   if (route != null) {
     yield put(actions.buildRouteSuccess(feature, route, success))
     yield put(change(FEATURE_FORM_KEY, 'geometry', { type: 'LineString', coordinates: route }))
